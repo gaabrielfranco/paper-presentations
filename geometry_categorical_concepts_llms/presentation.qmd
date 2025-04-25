@@ -66,7 +66,7 @@ Intuition: If two concepts are causally separable, modifying one would not modif
 Source: [Author's presentation](https://kihopark.github.io/files/NeurIPS%202023%20Workshop%20keynote.pdf)
 :::
 
-## Causal Inner Product
+## Causal Inner Product Intuition
 
 ![](causal_ip.png){fig-align="center"}
 
@@ -78,10 +78,65 @@ Source: [Author's presentation](https://kihopark.github.io/files/NeurIPS%202023%
 - The causal inner product unifies $\bar{g}_W$ (unembedding representation of $W$) and $\bar{l}_W$ (embedding representation of $W$).
 :::
 
-
 ::: footer
 Source: Park, K., Choe, Y. J., & Veitch, V. (2023)
 :::
+
+## Preliminaries: Inner Product
+
+- Symmetric, positive definite (P.D.), bilinear form $\langle u,v \rangle$.
+- Positive definite defn.: $\forall u, v \neq 0,\langle u,v \rangle > 0$.
+- Inner product $\langle u,v \rangle = u^T G v$.
+
+  ::: {.tiny-text}
+  - $G$ is symmetric, P.D, meaning that it has only positive eigenvalues.
+  - $G = PDP^T = (PD^{\frac{1}{2}})(D^{\frac{1}{2}}P^T) = XX^T$
+  - Then, we can use $\langle u,v \rangle = (u^T X)(X^T v) = (X^T u)^T (X^T v) = \bar{u}^T \bar{v}$. 
+    - This means that we are mapping the vectors to a new space, and use the Euclidian inner product in the new space.
+  :::
+<!-- - When $G = I_d$, we have the Euclidian inner product. -->
+
+<!-- ::: footer
+Source: Mark Crovella lecture notes.
+::: -->
+
+## Defining the Causal Inner Product
+
+- There is some invertible matrix $A$ and constant vector $\bar{\gamma}_0$ such that, if we transform the embedding and unembedding spaces as:
+  $$g(y) \gets A(\gamma(y) - \bar{\gamma}_0), \quad l(x) \gets A^{-T} \lambda(x)$$
+  then the Euclidian inner product in the transformed spaces is the causal inner product.
+- $\langle .,. \rangle_C$ is a causal inner product if $\langle \bar{\gamma}_W, \bar{\gamma}_Z \rangle_C = 0$ whenever $W$ and $Z$ are causally separable.
+
+::: footer
+Source: Park, K., Choe, Y. J., Jiang, Y., & Veitch, V (2024)
+:::
+
+## Defining the Causal Inner Product
+
+- The Riesz isomorphism between the embedding and unembedding spaces is simply the usual vector transpose operation, ie, $\langle \bar{\gamma}_W,. \rangle_C = (\bar{\lambda}_W)^T.$
+  - Another way to see it: we can map the embedding space to the unembedding space by mapping each $\bar{\gamma}_W$ to a linear function according to $\bar{\gamma}_W \mapsto \langle \bar{\gamma}_W,. \rangle_C$.
+
+::: footer
+Source: Park, K., Choe, Y. J., Jiang, Y., & Veitch, V (2024)
+:::
+
+## Defining the Causal Inner Product
+
+- Let $M$ be a symmetric positive definite matrix.
+
+- The causal inner product is defined as $\langle \bar{\gamma}, \bar{\gamma}' \rangle_C = \bar{\gamma}^\top M \bar{\gamma}'$.
+
+- If the set of concepts $\{W_k\}_{k=1}^d$ forms a basis $G = [\bar{\gamma}_{W_1}, \dots, \bar{\gamma}_{W_d}]$, then under Assumption 3.3 (causally separable concepts representations are independent):
+$$M^{-1} = GG^\top \quad \text{and} \quad G^\top \text{Cov}(\gamma)^{-1} G = D$$
+where $ D $ is a diagonal matrix with positive entries.
+
+## Canonical Choice: $D = I_d$
+
+- In experiments, they set: $D = I_d \quad \Rightarrow \quad M = \text{Cov}(\gamma)^{-1}$
+
+- This gives a closed-form inner product:
+$$\langle \bar{\gamma}, \bar{\gamma}' \rangle_C := \bar{\gamma}^\top \text{Cov}(\gamma)^{-1} \bar{\gamma}'$$
+
 
 # General Concepts and Hierarchical Structure
 
@@ -240,6 +295,44 @@ c.  $\bar{l}_{w_1} - \bar{l}_{w_0} \perp \bar{l}_{z_0} - \bar{l}_{z_1}$ for $Z \
 Source: Park, K., Choe, Y. J., Jiang, Y., & Veitch, V (2024)
 :::
 
+## Estimating Attribute Vectors $\bar{\ell}_w$
+
+* **Goal:** Estimate a vector representation $\bar{\ell}_w$ for each attribute $w$.
+* **Approach:** Utilize vocabulary sets $\mathcal{Y}(w)$ associated with the attribute $w$.
+* The vector $\bar{\ell}_w$ should satisfy two key properties (based on their theoretical results).
+
+::: footer
+Source: Park, K., Choe, Y. J., Jiang, Y., & Veitch, V (2024)
+:::
+
+---
+
+## Desired Properties & LDA
+
+1.  **Separation:** When the full vocabulary is projected onto $\bar{\ell}_w$, words in $\mathcal{Y}(w)$ should be clearly separated from the rest.
+2.  **Consistency:** Projections of unembedding vectors $y \in \mathcal{Y}(w)$ should have approximately the same value (i.e., small variance).
+
+* **Method:** They use Linear Discriminant Analysis (LDA) to find projection directions that minimize within-class variance and maximize between-class variance.
+
+::: footer
+Source: Park, K., Choe, Y. J., Jiang, Y., & Veitch, V (2024)
+:::
+
+---
+
+## Formal Estimation
+
+- The vector representation $\bar{\ell}_w$ for a binary feature $W$ corresponding to attribute $w$ is estimated as $\bar{\ell}_w = (\tilde{g}_w^\top \mathbb{E}(g_w)) \tilde{g}_w$.
+- $\tilde{g}_w$ is defined as:
+    $$
+    \tilde{g}_w = \frac{\text{Cov}(g_w)^\dagger \mathbb{E}(g_w)}{\|\text{Cov}(g_w)^\dagger \mathbb{E}(g_w)\|_2},
+    $$
+    where $g_w$ is an unembedding vector of a word sampled uniformly from the vocabulary set $\mathcal{Y}$.
+
+::: footer
+Source: Park, K., Choe, Y. J., Jiang, Y., & Veitch, V (2024)
+:::
+
 # Some Results
 
 ## Setup
@@ -288,74 +381,6 @@ Source: Park, K., Choe, Y. J., Jiang, Y., & Veitch, V (2024)
 :::
 
 # Q&A
-
-# Appendix
-
-## Inner Product
-
-- Symmetric, positive definite (P.D.), bilinear form $\langle u,v \rangle$.
-- Positive definite defn.: $\forall u, v \neq 0,\langle u,v \rangle > 0$.
-- Inner product $\langle u,v \rangle = u^T G v$.
-  - $G$ is symmetric, P.D, meaning that it has only positive eigenvalues.
-  - $G = PDP^T = (PD^{\frac{1}{2}})(D^{\frac{1}{2}}P^T) = XX^T$
-  - Then, we can use $\langle u,v \rangle = u^T X X^T v$, meaning that we are mapping the vectors to a new space, and use the Euclidian inner product in the new space.
-<!-- - When $G = I_d$, we have the Euclidian inner product. -->
-
-::: footer
-Source: Mark Crovella lecture notes.
-:::
-
-## Causal Inner Product
-
-- There is some invertible matrix $A$ and constant vector $\bar{\gamma}_0$ such that, if we transform the embedding and unembedding spaces as:
-  $$g(y) \gets A(\gamma(y) - \bar{\gamma}_0), \quad l(x) \gets A^{-T} \lambda(x)$$
-  then the Euclidian inner product in the transformed spaces is the causal inner product.
-- $\langle .,. \rangle_C$ is a causal inner product if $\langle \bar{\gamma}_W, \bar{\gamma}_Z \rangle_C = 0$ whenever $W$ and $Z$ are causally separable.
-
-::: footer
-Source: Park, K., Choe, Y. J., Jiang, Y., & Veitch, V (2024)
-:::
-
-## Causal Inner Product
-
-- The Riesz isomorphism between the embedding and unembedding spaces is simply the usual vector transpose operation, ie, $\langle \bar{\gamma}_W,. \rangle_C = (\bar{\lambda}_W)^T.$
-  - Another way to see it: we can map the embedding space to the unembedding space by mapping each $\bar{\gamma}_W$ to a linear function according to $\bar{\gamma}_W \mapsto \langle \bar{\gamma}_W,. \rangle_C$.
-
-::: footer
-Source: Park, K., Choe, Y. J., Jiang, Y., & Veitch, V (2024)
-:::
-
-## Causal Inner Product Definition
-
-- Let $M$ be a symmetric positive definite matrix.
-
-- The causal inner product is defined as $\langle \bar{\gamma}, \bar{\gamma}' \rangle_C = \bar{\gamma}^\top M \bar{\gamma}'$.
-
-- If the set of concepts $\{W_k\}_{k=1}^d$ forms a basis $G = [\bar{\gamma}_{W_1}, \dots, \bar{\gamma}_{W_d}]$, then under Assumption 3.3 (causally separable concepts representations are independent):
-$$M^{-1} = GG^\top \quad \text{and} \quad G^\top \text{Cov}(\gamma)^{-1} G = D$$
-where $ D $ is a diagonal matrix with positive entries.
-
-<!-- ## Degrees of Freedom in Choosing  $M$
-
-- Causal orthogonality imposes $\frac{d(d-1)}{2}$ constraints.
-- Identifying $M$ has $\frac{d(d-1)}{2} + d$ degrees of freedom.
-- So, there are **$d$** degrees of freedom left — one for each diagonal entry in $D$.
-- Each choice of diagonal $D$ defines a valid causal inner product. -->
-
-## Canonical Choice: $D = I_d$
-
-- In experiments, they set: $D = I_d \quad \Rightarrow \quad M = \text{Cov}(\gamma)^{-1}$
-
-- This gives a closed-form inner product:
-$$\langle \bar{\gamma}, \bar{\gamma}' \rangle_C := \bar{\gamma}^\top \text{Cov}(\gamma)^{-1} \bar{\gamma}'$$
-
-<!-- ## Uniqueness and Validity
-
-- No unique choice of causal inner product.
-- **Most inner products can be ruled out.**
-- E.g., **Euclidean inner product** is **not causal** if $M = I_d$ because it does not satisfy:
-$$M^{-1} = GG^\top \quad \text{and} \quad G^\top \text{Cov}(\gamma)^{-1} G = D$$
-  for any $D$. -->
 
 ## References
 

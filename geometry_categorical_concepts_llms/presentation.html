@@ -194,8 +194,8 @@ Kiho Park, Yo Joong Choe, Yibo Jiang, and Victor Veitch
 <p>Source: <a href="https://kihopark.github.io/files/NeurIPS%202023%20Workshop%20keynote.pdf">Author’s presentation</a></p>
 </div>
 </section>
-<section id="causal-inner-product" class="slide level2">
-<h2>Causal Inner Product</h2>
+<section id="causal-inner-product-intuition" class="slide level2">
+<h2>Causal Inner Product Intuition</h2>
 
 <img data-src="causal_ip.png" class="quarto-figure quarto-figure-center r-stretch"><div class="tiny-text">
 <ul>
@@ -208,6 +208,65 @@ Kiho Park, Yo Joong Choe, Yibo Jiang, and Victor Veitch
 <div class="footer">
 <p>Source: Park, K., Choe, Y. J., &amp; Veitch, V. (2023)</p>
 </div>
+</section>
+<section id="preliminaries-inner-product" class="slide level2">
+<h2>Preliminaries: Inner Product</h2>
+<ul>
+<li><p>Symmetric, positive definite (P.D.), bilinear form <span class="math inline">\(\langle u,v \rangle\)</span>.</p></li>
+<li><p>Positive definite defn.: <span class="math inline">\(\forall u, v \neq 0,\langle u,v \rangle &gt; 0\)</span>.</p></li>
+<li><p>Inner product <span class="math inline">\(\langle u,v \rangle = u^T G v\)</span>.</p>
+<div class="tiny-text">
+<ul>
+<li><span class="math inline">\(G\)</span> is symmetric, P.D, meaning that it has only positive eigenvalues.</li>
+<li><span class="math inline">\(G = PDP^T = (PD^{\frac{1}{2}})(D^{\frac{1}{2}}P^T) = XX^T\)</span></li>
+<li>Then, we can use <span class="math inline">\(\langle u,v \rangle = (u^T X)(X^T v) = (X^T u)^T (X^T v) = \bar{u}^T \bar{v}\)</span>.
+<ul>
+<li>This means that we are mapping the vectors to a new space, and use the Euclidian inner product in the new space.</li>
+</ul></li>
+</ul>
+</div>
+<!-- - When $G = I_d$, we have the Euclidian inner product. --></li>
+</ul>
+<!-- ::: footer
+Source: Mark Crovella lecture notes.
+::: -->
+</section>
+<section id="defining-the-causal-inner-product" class="slide level2">
+<h2>Defining the Causal Inner Product</h2>
+<ul>
+<li>There is some invertible matrix <span class="math inline">\(A\)</span> and constant vector <span class="math inline">\(\bar{\gamma}_0\)</span> such that, if we transform the embedding and unembedding spaces as: <span class="math display">\[g(y) \gets A(\gamma(y) - \bar{\gamma}_0), \quad l(x) \gets A^{-T} \lambda(x)\]</span> then the Euclidian inner product in the transformed spaces is the causal inner product.</li>
+<li><span class="math inline">\(\langle .,. \rangle_C\)</span> is a causal inner product if <span class="math inline">\(\langle \bar{\gamma}_W, \bar{\gamma}_Z \rangle_C = 0\)</span> whenever <span class="math inline">\(W\)</span> and <span class="math inline">\(Z\)</span> are causally separable.</li>
+</ul>
+<div class="footer">
+<p>Source: Park, K., Choe, Y. J., Jiang, Y., &amp; Veitch, V (2024)</p>
+</div>
+</section>
+<section id="defining-the-causal-inner-product-1" class="slide level2">
+<h2>Defining the Causal Inner Product</h2>
+<ul>
+<li>The Riesz isomorphism between the embedding and unembedding spaces is simply the usual vector transpose operation, ie, <span class="math inline">\(\langle \bar{\gamma}_W,. \rangle_C = (\bar{\lambda}_W)^T.\)</span>
+<ul>
+<li>Another way to see it: we can map the embedding space to the unembedding space by mapping each <span class="math inline">\(\bar{\gamma}_W\)</span> to a linear function according to <span class="math inline">\(\bar{\gamma}_W \mapsto \langle \bar{\gamma}_W,. \rangle_C\)</span>.</li>
+</ul></li>
+</ul>
+<div class="footer">
+<p>Source: Park, K., Choe, Y. J., Jiang, Y., &amp; Veitch, V (2024)</p>
+</div>
+</section>
+<section id="defining-the-causal-inner-product-2" class="slide level2">
+<h2>Defining the Causal Inner Product</h2>
+<ul>
+<li><p>Let <span class="math inline">\(M\)</span> be a symmetric positive definite matrix.</p></li>
+<li><p>The causal inner product is defined as <span class="math inline">\(\langle \bar{\gamma}, \bar{\gamma}' \rangle_C = \bar{\gamma}^\top M \bar{\gamma}'\)</span>.</p></li>
+<li><p>If the set of concepts <span class="math inline">\(\{W_k\}_{k=1}^d\)</span> forms a basis <span class="math inline">\(G = [\bar{\gamma}_{W_1}, \dots, \bar{\gamma}_{W_d}]\)</span>, then under Assumption 3.3 (causally separable concepts representations are independent): <span class="math display">\[M^{-1} = GG^\top \quad \text{and} \quad G^\top \text{Cov}(\gamma)^{-1} G = D\]</span> where $ D $ is a diagonal matrix with positive entries.</p></li>
+</ul>
+</section>
+<section id="canonical-choice-d-i_d" class="slide level2">
+<h2>Canonical Choice: <span class="math inline">\(D = I_d\)</span></h2>
+<ul>
+<li><p>In experiments, they set: <span class="math inline">\(D = I_d \quad \Rightarrow \quad M = \text{Cov}(\gamma)^{-1}\)</span></p></li>
+<li><p>This gives a closed-form inner product: <span class="math display">\[\langle \bar{\gamma}, \bar{\gamma}' \rangle_C := \bar{\gamma}^\top \text{Cov}(\gamma)^{-1} \bar{\gamma}'\]</span></p></li>
+</ul>
 </section></section>
 <section>
 <section id="general-concepts-and-hierarchical-structure" class="title-slide slide level1 center">
@@ -356,6 +415,42 @@ Figure&nbsp;1: Convex Hull of Random Points
 <img data-src="fig2-c.png" class="quarto-figure quarto-figure-center r-stretch"><div class="footer">
 <p>Source: Park, K., Choe, Y. J., Jiang, Y., &amp; Veitch, V (2024)</p>
 </div>
+</section>
+<section id="estimating-attribute-vectors-barell_w" class="slide level2">
+<h2>Estimating Attribute Vectors <span class="math inline">\(\bar{\ell}_w\)</span></h2>
+<ul>
+<li><strong>Goal:</strong> Estimate a vector representation <span class="math inline">\(\bar{\ell}_w\)</span> for each attribute <span class="math inline">\(w\)</span>.</li>
+<li><strong>Approach:</strong> Utilize vocabulary sets <span class="math inline">\(\mathcal{Y}(w)\)</span> associated with the attribute <span class="math inline">\(w\)</span>.</li>
+<li>The vector <span class="math inline">\(\bar{\ell}_w\)</span> should satisfy two key properties (based on their theoretical results).</li>
+</ul>
+<div class="footer">
+<p>Source: Park, K., Choe, Y. J., Jiang, Y., &amp; Veitch, V (2024)</p>
+</div>
+</section>
+<section id="desired-properties-lda" class="slide level2">
+<h2>Desired Properties &amp; LDA</h2>
+<ol type="1">
+<li><strong>Separation:</strong> When the full vocabulary is projected onto <span class="math inline">\(\bar{\ell}_w\)</span>, words in <span class="math inline">\(\mathcal{Y}(w)\)</span> should be clearly separated from the rest.</li>
+<li><strong>Consistency:</strong> Projections of unembedding vectors <span class="math inline">\(y \in \mathcal{Y}(w)\)</span> should have approximately the same value (i.e., small variance).</li>
+</ol>
+<ul>
+<li><strong>Method:</strong> They use Linear Discriminant Analysis (LDA) to find projection directions that minimize within-class variance and maximize between-class variance.</li>
+</ul>
+<div class="footer">
+<p>Source: Park, K., Choe, Y. J., Jiang, Y., &amp; Veitch, V (2024)</p>
+</div>
+</section>
+<section id="formal-estimation" class="slide level2">
+<h2>Formal Estimation</h2>
+<ul>
+<li>The vector representation <span class="math inline">\(\bar{\ell}_w\)</span> for a binary feature <span class="math inline">\(W\)</span> corresponding to attribute <span class="math inline">\(w\)</span> is estimated as <span class="math inline">\(\bar{\ell}_w = (\tilde{g}_w^\top \mathbb{E}(g_w)) \tilde{g}_w\)</span>.</li>
+<li><span class="math inline">\(\tilde{g}_w\)</span> is defined as: <span class="math display">\[
+  \tilde{g}_w = \frac{\text{Cov}(g_w)^\dagger \mathbb{E}(g_w)}{\|\text{Cov}(g_w)^\dagger \mathbb{E}(g_w)\|_2},
+  \]</span> where <span class="math inline">\(g_w\)</span> is an unembedding vector of a word sampled uniformly from the vocabulary set <span class="math inline">\(\mathcal{Y}\)</span>.</li>
+</ul>
+<div class="footer">
+<p>Source: Park, K., Choe, Y. J., Jiang, Y., &amp; Veitch, V (2024)</p>
+</div>
 </section></section>
 <section>
 <section id="some-results" class="title-slide slide level1 center">
@@ -404,81 +499,10 @@ Figure&nbsp;1: Convex Hull of Random Points
 <p>Source: Park, K., Choe, Y. J., Jiang, Y., &amp; Veitch, V (2024)</p>
 </div>
 </section></section>
+<section>
 <section id="qa" class="title-slide slide level1 center">
 <h1>Q&amp;A</h1>
 
-</section>
-
-<section>
-<section id="appendix" class="title-slide slide level1 center">
-<h1>Appendix</h1>
-
-</section>
-<section id="inner-product" class="slide level2">
-<h2>Inner Product</h2>
-<ul>
-<li>Symmetric, positive definite (P.D.), bilinear form <span class="math inline">\(\langle u,v \rangle\)</span>.</li>
-<li>Positive definite defn.: <span class="math inline">\(\forall u, v \neq 0,\langle u,v \rangle &gt; 0\)</span>.</li>
-<li>Inner product <span class="math inline">\(\langle u,v \rangle = u^T G v\)</span>.
-<ul>
-<li><span class="math inline">\(G\)</span> is symmetric, P.D, meaning that it has only positive eigenvalues.</li>
-<li><span class="math inline">\(G = PDP^T = (PD^{\frac{1}{2}})(D^{\frac{1}{2}}P^T) = XX^T\)</span></li>
-<li>Then, we can use <span class="math inline">\(\langle u,v \rangle = u^T X X^T v\)</span>, meaning that we are mapping the vectors to a new space, and use the Euclidian inner product in the new space. <!-- - When $G = I_d$, we have the Euclidian inner product. --></li>
-</ul></li>
-</ul>
-<div class="footer">
-<p>Source: Mark Crovella lecture notes.</p>
-</div>
-</section>
-<section id="causal-inner-product-1" class="slide level2">
-<h2>Causal Inner Product</h2>
-<ul>
-<li>There is some invertible matrix <span class="math inline">\(A\)</span> and constant vector <span class="math inline">\(\bar{\gamma}_0\)</span> such that, if we transform the embedding and unembedding spaces as: <span class="math display">\[g(y) \gets A(\gamma(y) - \bar{\gamma}_0), \quad l(x) \gets A^{-T} \lambda(x)\]</span> then the Euclidian inner product in the transformed spaces is the causal inner product.</li>
-<li><span class="math inline">\(\langle .,. \rangle_C\)</span> is a causal inner product if <span class="math inline">\(\langle \bar{\gamma}_W, \bar{\gamma}_Z \rangle_C = 0\)</span> whenever <span class="math inline">\(W\)</span> and <span class="math inline">\(Z\)</span> are causally separable.</li>
-</ul>
-<div class="footer">
-<p>Source: Park, K., Choe, Y. J., Jiang, Y., &amp; Veitch, V (2024)</p>
-</div>
-</section>
-<section id="causal-inner-product-2" class="slide level2">
-<h2>Causal Inner Product</h2>
-<ul>
-<li>The Riesz isomorphism between the embedding and unembedding spaces is simply the usual vector transpose operation, ie, <span class="math inline">\(\langle \bar{\gamma}_W,. \rangle_C = (\bar{\lambda}_W)^T.\)</span>
-<ul>
-<li>Another way to see it: we can map the embedding space to the unembedding space by mapping each <span class="math inline">\(\bar{\gamma}_W\)</span> to a linear function according to <span class="math inline">\(\bar{\gamma}_W \mapsto \langle \bar{\gamma}_W,. \rangle_C\)</span>.</li>
-</ul></li>
-</ul>
-<div class="footer">
-<p>Source: Park, K., Choe, Y. J., Jiang, Y., &amp; Veitch, V (2024)</p>
-</div>
-</section>
-<section id="causal-inner-product-definition" class="slide level2">
-<h2>Causal Inner Product Definition</h2>
-<ul>
-<li><p>Let <span class="math inline">\(M\)</span> be a symmetric positive definite matrix.</p></li>
-<li><p>The causal inner product is defined as <span class="math inline">\(\langle \bar{\gamma}, \bar{\gamma}' \rangle_C = \bar{\gamma}^\top M \bar{\gamma}'\)</span>.</p></li>
-<li><p>If the set of concepts <span class="math inline">\(\{W_k\}_{k=1}^d\)</span> forms a basis <span class="math inline">\(G = [\bar{\gamma}_{W_1}, \dots, \bar{\gamma}_{W_d}]\)</span>, then under Assumption 3.3 (causally separable concepts representations are independent): <span class="math display">\[M^{-1} = GG^\top \quad \text{and} \quad G^\top \text{Cov}(\gamma)^{-1} G = D\]</span> where $ D $ is a diagonal matrix with positive entries.</p></li>
-</ul>
-<!-- ## Degrees of Freedom in Choosing  $M$
-
-- Causal orthogonality imposes $\frac{d(d-1)}{2}$ constraints.
-- Identifying $M$ has $\frac{d(d-1)}{2} + d$ degrees of freedom.
-- So, there are **$d$** degrees of freedom left — one for each diagonal entry in $D$.
-- Each choice of diagonal $D$ defines a valid causal inner product. -->
-</section>
-<section id="canonical-choice-d-i_d" class="slide level2">
-<h2>Canonical Choice: <span class="math inline">\(D = I_d\)</span></h2>
-<ul>
-<li><p>In experiments, they set: <span class="math inline">\(D = I_d \quad \Rightarrow \quad M = \text{Cov}(\gamma)^{-1}\)</span></p></li>
-<li><p>This gives a closed-form inner product: <span class="math display">\[\langle \bar{\gamma}, \bar{\gamma}' \rangle_C := \bar{\gamma}^\top \text{Cov}(\gamma)^{-1} \bar{\gamma}'\]</span></p></li>
-</ul>
-<!-- ## Uniqueness and Validity
-
-- No unique choice of causal inner product.
-- **Most inner products can be ruled out.**
-- E.g., **Euclidean inner product** is **not causal** if $M = I_d$ because it does not satisfy:
-$$M^{-1} = GG^\top \quad \text{and} \quad G^\top \text{Cov}(\gamma)^{-1} G = D$$
-  for any $D$. -->
 </section>
 <section id="references" class="slide level2">
 <h2>References</h2>
